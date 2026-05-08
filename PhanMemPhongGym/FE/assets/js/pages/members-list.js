@@ -15,7 +15,7 @@ window.GymApp.pages['members-list'] = {
     this._ptFiltered = Array.isArray(rawPts) ? [...rawPts] : [];
     this._ptSortState = '';
     return `
-      <div class="flex flex-col gap-margin">
+      <div class="flex flex-col gap-margin animate-soft">
 
         <!-- Action Bar -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-standard">
@@ -23,7 +23,7 @@ window.GymApp.pages['members-list'] = {
             <h2 class="font-display-2xl text-display-2xl text-on-surface font-bold">Danh sách hội viên</h2>
             <p class="text-on-surface-variant font-body-sm text-body-sm">Quản lý toàn bộ hội viên và huấn luyện viên</p>
           </div>
-          <button class="bg-brand-primary text-white px-loose py-compact rounded-lg font-bold hover:bg-[#187a2d] transition-all flex items-center gap-compact shadow-sm" data-page="member-add">
+          <button class="bg-brand-primary text-white px-loose py-compact rounded-2xl font-bold hover:shadow-lg hover:shadow-brand-primary/30 transition-all flex items-center gap-compact" data-page="member-add">
             <span class="material-symbols-outlined text-sm">person_add</span>
             Thêm hội viên mới
           </button>
@@ -62,7 +62,7 @@ window.GymApp.pages['members-list'] = {
               <span id="filter-badge" style="display:none;position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#1D9336;color:#fff;border-radius:50%;font-size:9px;align-items:center;justify-content:center;font-weight:700;"></span>
             </button>
           </div>
-          <div id="members-table-container" class="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant shadow-sm">
+          <div id="members-table-container" class="premium-card overflow-hidden shadow-soft">
             ${this._renderMemberTable()}
           </div>
         </div>
@@ -97,18 +97,23 @@ window.GymApp.pages['members-list'] = {
         </div>
 
         <!-- Stats -->
-        <div class="grid grid-cols-3 gap-loose">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-loose">
           ${
             (function() {
               const stats = window.GymApp.data.stats?.hoi_vien || { tong: 0, con_han: 0, het_han: 0 };
               return [
-                { label: 'Tổng hội viên', value: stats.tong, color: 'text-brand-primary' },
-                { label: 'Đang hoạt động', value: stats.con_han, color: 'text-brand-primary' },
-                { label: 'Hết hạn', value: stats.het_han, color: 'text-error' },
+                { label: 'Tổng hội viên', value: stats.tong, color: 'text-brand-primary', icon: 'groups' },
+                { label: 'Đang hoạt động', value: stats.con_han, color: 'text-brand-primary', icon: 'check_circle' },
+                { label: 'Hết hạn', value: stats.het_han, color: 'text-error', icon: 'error' },
               ].map(s => `
-                <div class="bg-surface-container-lowest p-loose rounded-xl border border-outline-variant shadow-sm flex flex-col gap-atom">
-                  <span class="text-on-surface-variant font-body-sm text-body-sm uppercase tracking-wider font-bold">${s.label}</span>
-                  <span class="${s.color} font-display-2xl text-display-2xl font-bold">${s.value}</span>
+                <div class="premium-card p-loose shadow-soft flex items-center gap-standard">
+                  <div class="w-12 h-12 rounded-2xl bg-surface-container flex items-center justify-center">
+                    <span class="material-symbols-outlined text-on-surface-variant">${s.icon}</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider font-bold opacity-60">${s.label}</span>
+                    <span class="${s.color} font-display-2xl text-display-2xl font-black">${s.value}</span>
+                  </div>
                 </div>
               `).join('');
             })()

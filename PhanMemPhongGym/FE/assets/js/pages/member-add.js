@@ -3,7 +3,7 @@ window.GymApp.pages['member-add'] = {
 
   render: function () {
     return `
-      <div class="flex flex-col gap-compact w-full xl:w-[90%] max-w-none mx-auto">
+      <div class="flex flex-col gap-margin w-full xl:w-[95%] mx-auto animate-soft">
 
         <!-- Header -->
         <div class="flex items-center gap-standard">
@@ -34,7 +34,7 @@ window.GymApp.pages['member-add'] = {
 
         <!-- Form Đăng ký hội viên -->
         <div id="form-register">
-          <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-compact md:p-standard">
+          <div class="premium-card p-loose shadow-soft">
 
             <!-- Avatar Upload -->
             <div class="flex items-start gap-compact mb-compact">
@@ -91,13 +91,13 @@ window.GymApp.pages['member-add'] = {
             </div>
 
             <!-- Nút lưu -->
-            <div class="flex justify-end gap-compact pt-compact border-t border-outline-variant">
-              <button type="button" class="px-loose py-compact rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors font-body-md" data-page="members-list">
+            <div class="flex justify-end gap-standard pt-standard border-t border-outline-variant/30 mt-standard">
+              <button type="button" class="px-loose py-compact rounded-2xl border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-all font-bold" data-page="members-list">
                 Hủy bỏ
               </button>
-              <button type="button" id="btn-save-member" class="bg-brand-primary text-white px-loose py-compact rounded-lg font-bold hover:bg-[#187a2d] transition-all flex items-center gap-compact shadow-sm">
+              <button type="button" id="btn-save-member" class="bg-brand-primary text-white px-loose py-compact rounded-2xl font-bold hover:shadow-lg hover:shadow-brand-primary/30 transition-all flex items-center gap-compact">
                 <span class="material-symbols-outlined text-sm">save</span>
-                Lưu hội viên
+                Lưu hồ sơ hội viên
               </button>
             </div>
           </div>
@@ -184,24 +184,26 @@ window.GymApp.pages['member-add'] = {
   },
 
   _field: function (label, id, type, placeholder = '', hint = '', readonly = false) {
+    const commonCls = "w-full bg-surface-container-low/50 border border-outline-variant/50 text-on-surface px-standard py-3 rounded-xl focus:border-brand-primary focus:bg-white transition-all outline-none font-body-md text-body-md";
+    const readonlyCls = "w-full bg-surface-container text-on-surface-variant px-standard py-3 rounded-xl border border-outline-variant outline-none font-body-md text-body-md cursor-not-allowed opacity-60";
     return `
-      <div>
-        <label class="block text-body-sm text-on-surface-variant font-bold mb-xs">${label}</label>
+      <div class="flex flex-col gap-xs">
+        <label class="text-label-bold text-on-surface font-bold px-1">${label}</label>
         <input
           id="${id}" type="${type}"
           placeholder="${placeholder}"
-          ${readonly ? 'readonly class="w-full bg-surface-container border border-outline-variant text-on-surface-variant px-standard py-compact rounded-lg outline-none font-body-md text-body-md cursor-not-allowed"' : 'class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface px-standard py-compact rounded-lg focus:border-brand-primary outline-none font-body-md text-body-md"'}
+          ${readonly ? `readonly class="${readonlyCls}"` : `class="${commonCls}"`}
         />
-        ${hint ? `<p class="text-body-sm text-on-surface-variant mt-xs">${hint}</p>` : ''}
+        ${hint ? `<p class="text-[11px] text-on-surface-variant px-1 opacity-60">${hint}</p>` : ''}
       </div>
     `;
   },
 
   _select: function (label, id, options) {
     return `
-      <div>
-        <label class="block text-body-sm text-on-surface-variant font-bold mb-xs">${label}</label>
-        <select id="${id}" class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface px-standard py-compact rounded-lg focus:border-brand-primary outline-none font-body-md text-body-md">
+      <div class="flex flex-col gap-xs">
+        <label class="text-label-bold text-on-surface font-bold px-1">${label}</label>
+        <select id="${id}" class="w-full bg-surface-container-low/50 border border-outline-variant/50 text-on-surface px-standard py-3 rounded-xl focus:border-brand-primary focus:bg-white transition-all outline-none font-body-md text-body-md">
           <option value="">— Chọn ${label.toLowerCase()} —</option>
           ${options.map(o => `<option value="${o}">${o}</option>`).join('')}
         </select>

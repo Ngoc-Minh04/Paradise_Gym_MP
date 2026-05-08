@@ -1,4 +1,32 @@
-/* Paradise GYM — Custom styles */
+/* ===== COLOR SYSTEM & DARK MODE ===== */
+:root {
+  --bg-main: #f8fafc;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-sidebar: linear-gradient(180deg, #f1f4f9 0%, #ffffff 100%);
+  --text-main: #1a1c1e;
+  --text-muted: #5b646b;
+  --border-color: rgba(0, 0, 0, 0.08);
+}
+
+.dark {
+  --bg-main: #0f172a;
+  --bg-card: rgba(30, 41, 59, 0.7);
+  --bg-sidebar: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== GLOBAL SOFTNESS ===== */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.2s ease;
+}
+
+body {
+  background-color: var(--bg-main) !important;
+  color: var(--text-main) !important;
+  letter-spacing: -0.01em;
+}
 
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -14,6 +42,23 @@
 
 *:focus-visible { outline: 2px solid #1D9336 !important; outline-offset: 2px; }
 
+/* ===== PREMIUM CARDS ===== */
+.premium-card {
+  background: var(--bg-card) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  border-radius: 1.5rem;
+  color: var(--text-main) !important;
+}
+
+/* ===== PREMIUM HEADER ===== */
+.premium-header {
+  background: var(--bg-card) !important;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -22,8 +67,9 @@
 
 /* ===== SIDEBAR COLLAPSE ===== */
 #sidebar {
-  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+  background: var(--bg-sidebar) !important;
 }
 
 #sidebar.sidebar-collapsed { width: 64px !important; }
@@ -52,8 +98,39 @@
   padding: 10px 8px !important;
 }
 
+.nav-item, .sub-nav-item, .accordion-trigger {
+  border-radius: 1rem !important;
+  margin: 2px 8px !important;
+  padding: 10px 16px !important;
+}
+
 /* ===== NAV ACTIVE STATE ===== */
-.nav-active { background-color: #e7f5e9 !important; }
+.nav-active {
+  background: linear-gradient(90deg, rgba(29, 147, 54, 0.15) 0%, rgba(29, 147, 54, 0.05) 100%) !important;
+  color: #1D9336 !important;
+  font-weight: 700 !important;
+  box-shadow: inset 4px 0 0 #1D9336;
+}
+
+/* ===== BUTTONS & INPUTS ===== */
+button, input, select, textarea {
+  border-radius: 0.75rem !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  box-shadow: 0 0 0 4px rgba(29, 147, 54, 0.1) !important;
+  border-color: #1D9336 !important;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes slideInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-soft {
+  animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
 /* ===== ACCORDION ===== */
 .accordion-content {
