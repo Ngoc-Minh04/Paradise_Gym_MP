@@ -9,7 +9,7 @@ window.GymApp.pages['pt-register'] = {
     const bookings = Array.isArray(window.GymApp.data.ptBookings) ? window.GymApp.data.ptBookings : [];
 
     return `
-      <div class="flex flex-col gap-margin">
+      <div class="flex flex-col gap-margin animate-soft">
 
         <!-- Page Title -->
         <div>
@@ -20,11 +20,11 @@ window.GymApp.pages['pt-register'] = {
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-loose">
 
           <!-- ===== CARD 1: Form đặt lịch ===== -->
-          <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
-            <div class="px-loose py-standard border-b border-outline-variant bg-surface-container-low">
-              <h3 class="font-display-2xl text-display-2xl font-bold text-on-surface flex items-center gap-compact">
+          <div class="premium-card shadow-soft overflow-hidden h-fit">
+            <div class="px-loose py-standard border-b border-outline-variant/30 bg-black/5 dark:bg-white/5">
+              <h3 class="font-display-xl text-on-surface font-bold flex items-center gap-compact">
                 <span class="material-symbols-outlined text-brand-primary">edit_calendar</span>
-                Thông tin đặt lịch
+                Thông tin đặt lịch tập
               </h3>
             </div>
 
@@ -38,21 +38,21 @@ window.GymApp.pages['pt-register'] = {
                 </label>
                 <!-- Search & List PT -->
                 <div id="pt-selection-area" class="space-y-xs">
-                  <div class="relative mb-standard">
+                  <div class="relative mb-compact">
                     <span class="material-symbols-outlined absolute left-standard top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
-                    <input id="search-pt" type="text" placeholder="Tìm kiếm PT..." class="w-full bg-surface-container-low border border-outline-variant text-on-surface pl-8 pr-standard py-compact rounded-lg focus:border-brand-primary outline-none font-body-md text-body-md" />
+                    <input id="search-pt" type="text" placeholder="Tìm tên PT..." class="w-full bg-surface-container-low/50 border border-outline-variant/50 text-on-surface pl-9 pr-standard py-3 rounded-xl focus:border-brand-primary focus:bg-white outline-none font-body-md text-body-md transition-all" />
                   </div>
-                  <div id="pt-list" class="flex flex-col gap-xs max-h-48 overflow-y-auto pr-xs border border-outline-variant rounded-lg p-xs">
-                    <p class="text-center py-4 text-on-surface-variant">Đang tải danh sách PT...</p>
+                  <div id="pt-list" class="flex flex-col gap-1 max-h-48 overflow-y-auto pr-xs border border-outline-variant/30 rounded-xl p-2 bg-black/5 dark:bg-white/5">
+                    <p class="text-center py-4 text-on-surface-variant opacity-60">Đang tải danh sách PT...</p>
                   </div>
                 </div>
                 
                 <!-- PT đã chọn -->
-                <div id="selected-pt-display" class="hidden p-compact bg-[#e7f5e9] rounded-lg border border-brand-primary flex items-center gap-compact">
-                  <div id="selected-pt-info" class="flex items-center gap-compact flex-1">
+                <div id="selected-pt-display" class="hidden p-standard bg-brand-primary/10 rounded-2xl border border-brand-primary/30 flex items-center gap-standard">
+                  <div id="selected-pt-info" class="flex items-center gap-standard flex-1">
                     <!-- Avatar & Name will be injected here -->
                   </div>
-                  <button id="clear-pt" class="material-symbols-outlined text-xl text-on-surface-variant hover:text-error">close</button>
+                  <button id="clear-pt" class="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center material-symbols-outlined text-lg text-on-surface-variant hover:text-error hover:shadow-md transition-all">close</button>
                 </div>
               </div>
 
@@ -74,35 +74,53 @@ window.GymApp.pages['pt-register'] = {
                 </div>
 
                 <!-- Member đã chọn -->
-                <div id="selected-member-display" class="hidden p-compact bg-[#e7f5e9] rounded-lg border border-brand-primary flex items-center gap-compact">
-                  <div id="selected-member-info" class="flex items-center gap-compact flex-1">
+                <div id="selected-member-display" class="hidden p-standard bg-brand-primary/10 rounded-2xl border border-brand-primary/30 flex items-center gap-standard">
+                  <div id="selected-member-info" class="flex items-center gap-standard flex-1">
                     <!-- Avatar & Name will be injected here -->
                   </div>
-                  <button id="clear-member" class="material-symbols-outlined text-xl text-on-surface-variant hover:text-error">close</button>
+                  <button id="clear-member" class="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center material-symbols-outlined text-lg text-on-surface-variant hover:text-error hover:shadow-md transition-all">close</button>
                 </div>
               </div>
 
               <!-- Loại đăng ký, ngày, giờ -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-standard">
-                <div>
-                  <label class="block text-body-sm text-on-surface-variant font-bold mb-xs">Loại đăng ký</label>
-                  <select id="reg-type" class="w-full bg-surface-container-low border border-outline-variant text-on-surface px-standard py-compact rounded-lg focus:border-brand-primary outline-none font-body-md text-body-md">
+                <div class="flex flex-col gap-xs">
+                  <label class="text-label-bold text-on-surface font-bold px-1">Loại đăng ký</label>
+                  <select id="reg-type" class="w-full bg-surface-container-low/50 border border-outline-variant/50 text-on-surface px-standard py-3 rounded-xl focus:border-brand-primary outline-none font-body-md text-body-md">
                     <option value="Cá nhân">Cá nhân (1-1)</option>
                     <option value="Nhóm">Nhóm (2-5 người)</option>
                     <option value="Online">Online</option>
                   </select>
                 </div>
-                <div>
-                  <label class="block text-body-sm text-on-surface-variant font-bold mb-xs">Ngày tập</label>
-                  <input id="reg-date" type="date" class="w-full bg-surface-container-low border border-outline-variant text-on-surface px-standard py-compact rounded-lg focus:border-brand-primary outline-none font-body-md text-body-md" />
+                <div class="flex flex-col gap-xs">
+                  <label class="text-label-bold text-on-surface font-bold px-1">Ngày tập</label>
+                  <input id="reg-date" type="text" placeholder="Chọn ngày" readonly class="w-full bg-surface-container-low/50 border border-outline-variant/50 text-on-surface px-standard py-3 rounded-xl focus:border-brand-primary outline-none font-body-md text-body-md cursor-pointer" />
                 </div>
-                <div>
-                  <label class="block text-body-sm text-on-surface-variant font-bold mb-xs">Giờ bắt đầu</label>
-                  <input id="reg-start" type="time" class="w-full bg-surface-container-low border border-outline-variant text-on-surface px-standard py-compact rounded-lg focus:border-brand-primary outline-none font-body-md text-body-md" />
-                </div>
-                <div>
-                  <label class="block text-body-sm text-on-surface-variant font-bold mb-xs">Giờ kết thúc</label>
-                  <input id="reg-end" type="time" class="w-full bg-surface-container-low border border-outline-variant text-on-surface px-standard py-compact rounded-lg focus:border-brand-primary outline-none font-body-md text-body-md" />
+                <div class="md:col-span-2 flex flex-col gap-loose">
+                  <!-- Chọn Giờ bắt đầu -->
+                  <div class="flex flex-col gap-xs">
+                    <label class="text-label-bold text-on-surface font-bold px-1 flex items-center gap-xs">
+                      <span class="material-symbols-outlined text-brand-primary text-sm">schedule</span>
+                      Giờ bắt đầu
+                    </label>
+                    <div id="start-time-slots" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 p-1">
+                      ${this._renderTimeChips('start', '08:00')}
+                    </div>
+                  </div>
+
+                  <!-- Chọn Giờ kết thúc -->
+                  <div class="flex flex-col gap-xs">
+                    <label class="text-label-bold text-on-surface font-bold px-1 flex items-center gap-xs">
+                      <span class="material-symbols-outlined text-emerald-600 text-sm">more_time</span>
+                      Giờ kết thúc
+                    </label>
+                    <div id="end-time-slots" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 p-1">
+                      ${this._renderTimeChips('end', '09:00')}
+                    </div>
+                  </div>
+
+                  <input type="hidden" id="reg-start" value="08:00" />
+                  <input type="hidden" id="reg-end" value="09:00" />
                 </div>
               </div>
 
@@ -121,14 +139,14 @@ window.GymApp.pages['pt-register'] = {
           </div>
 
           <!-- ===== CARD 2: Danh sách đã đặt ===== -->
-          <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col">
-            <div class="px-loose py-standard border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
-              <h3 class="font-display-2xl text-display-2xl font-bold text-on-surface flex items-center gap-compact">
+          <div class="premium-card shadow-soft overflow-hidden flex flex-col">
+            <div class="px-loose py-standard border-b border-outline-variant/30 bg-black/5 dark:bg-white/5 flex items-center justify-between">
+              <h3 class="font-display-xl text-on-surface font-bold flex items-center gap-compact">
                 <span class="material-symbols-outlined text-brand-primary">calendar_month</span>
                 Lịch đã đặt
               </h3>
-              <span id="booking-count" class="bg-brand-primary text-white px-compact py-xs rounded-full text-label-xs font-bold">
-                ${[...window.GymApp.data.ptSchedules, ...window.GymApp.data.ptBookings].length}
+              <span id="booking-count" class="bg-brand-primary text-white px-compact py-xs rounded-full text-[10px] font-black uppercase tracking-wider">
+                ${[...window.GymApp.data.ptSchedules, ...window.GymApp.data.ptBookings].length} LỊCH
               </span>
             </div>
 
@@ -155,32 +173,32 @@ window.GymApp.pages['pt-register'] = {
       `;
     }
     return all.map(b => `
-      <div class="bg-surface-container-low rounded-xl border border-outline-variant p-standard flex flex-col gap-xs hover:border-brand-primary transition-colors">
+      <div class="premium-card p-standard flex flex-col gap-xs hover:border-brand-primary/50 transition-all group bg-white dark:bg-slate-800/30">
         <div class="flex items-start justify-between">
-          <div>
-            <p class="font-bold text-on-surface text-body-md">${b.memberName}</p>
-            <p class="text-on-surface-variant text-body-sm">${b.ptName}</p>
+          <div class="flex flex-col">
+            <p class="font-black text-on-surface text-body-md group-hover:text-brand-primary transition-colors">${b.memberName}</p>
+            <p class="text-label-xs text-on-surface-variant font-bold opacity-60 uppercase tracking-tighter">PT: ${b.ptName}</p>
           </div>
           ${window.GymApp.statusBadge(b.status)}
         </div>
-        <div class="flex items-center gap-loose text-on-surface-variant text-body-sm">
-          <span class="flex items-center gap-xs">
-            <span class="material-symbols-outlined text-sm">event</span>
+        <div class="flex flex-wrap items-center gap-standard text-on-surface-variant text-body-sm mt-1">
+          <span class="flex items-center gap-xs bg-surface-container px-compact py-atom rounded-full font-bold text-label-xs">
+            <span class="material-symbols-outlined text-xs">event</span>
             ${window.GymApp.formatDate(b.date)}
           </span>
-          <span class="flex items-center gap-xs">
-            <span class="material-symbols-outlined text-sm">schedule</span>
+          <span class="flex items-center gap-xs bg-brand-primary/10 text-brand-primary px-compact py-atom rounded-full font-bold text-label-xs">
+            <span class="material-symbols-outlined text-xs">schedule</span>
             ${b.startTime} — ${b.endTime}
           </span>
-          <span class="flex items-center gap-xs">
-            <span class="material-symbols-outlined text-sm">group</span>
+          <span class="flex items-center gap-xs bg-surface-container px-compact py-atom rounded-full font-bold text-label-xs">
+            <span class="material-symbols-outlined text-xs">group</span>
             ${b.type}
           </span>
         </div>
-        ${b.notes ? `<p class="text-on-surface-variant text-body-sm italic">"${b.notes}"</p>` : ''}
-        <div class="flex items-center justify-end gap-atom pt-xs border-t border-outline-variant">
-          <button class="material-symbols-outlined text-outline hover:text-brand-primary text-xl p-atom rounded hover:bg-surface-container transition-colors" title="Sửa">edit</button>
-          <button class="btn-cancel-booking material-symbols-outlined text-outline hover:text-error text-xl p-atom rounded hover:bg-error-container transition-colors" data-id="${b.id}" title="Hủy">event_busy</button>
+        ${b.notes ? `<div class="bg-black/5 dark:bg-white/5 p-compact rounded-xl mt-1 text-on-surface-variant text-body-sm italic border-l-4 border-brand-primary/30">"${b.notes}"</div>` : ''}
+        <div class="flex items-center justify-end gap-compact pt-xs border-t border-outline-variant/30 mt-xs">
+          <button class="w-8 h-8 rounded-full flex items-center justify-center material-symbols-outlined text-on-surface-variant hover:text-brand-primary hover:bg-brand-primary/10 transition-all text-lg" title="Sửa">edit</button>
+          <button class="btn-cancel-booking w-8 h-8 rounded-full flex items-center justify-center material-symbols-outlined text-on-surface-variant hover:text-error hover:bg-error/10 transition-all text-lg" data-id="${b.id}" title="Hủy">event_busy</button>
         </div>
       </div>
     `).join('');
@@ -216,10 +234,87 @@ window.GymApp.pages['pt-register'] = {
     this._renderMemberList();
     this._refreshBookingList();
 
-    // Set default date
-    const today = new Date().toISOString().split('T')[0];
-    const regDate = document.getElementById('reg-date');
-    if (regDate) regDate.value = today;
+    // Cấu hình Tiếng Việt cho Datepicker
+    const localeVi = {
+      days: ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'],
+      daysShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+      daysMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+      months: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+      monthsShort: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+      today: 'Hôm nay',
+      clear: 'Xóa',
+      dateFormat: 'dd/mm/yyyy',
+      timeFormat: 'HH:mm',
+      firstDay: 1
+    };
+
+    // Khởi tạo Datepicker cho Ngày tập
+    new AirDatepicker('#reg-date', {
+      locale: localeVi,
+      autoClose: true,
+      minDate: new Date()
+    });
+
+    // Xử lý chọn Giờ bắt đầu
+    const startContainer = document.getElementById('start-time-slots');
+    if (startContainer) {
+        startContainer.addEventListener('click', (e) => {
+            const chip = e.target.closest('.time-chip');
+            if (!chip) return;
+            // Xóa active cũ và trả về trạng thái bình thường
+            startContainer.querySelectorAll('.time-chip').forEach(c => {
+                c.classList.remove('bg-brand-primary', 'text-white', 'shadow-md');
+                c.classList.add('bg-surface-container-low', 'text-on-surface');
+            });
+            // Áp dụng màu xanh cho ô được chọn
+            chip.classList.remove('bg-surface-container-low', 'text-on-surface');
+            chip.classList.add('bg-brand-primary', 'text-white', 'shadow-md');
+            
+            const startVal = chip.dataset.time;
+            document.getElementById('reg-start').value = startVal;
+
+            // Tự động gợi ý giờ kết thúc (1 tiếng sau)
+            const [h, m] = startVal.split(':').map(Number);
+            const endVal = `${String(h + 1).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+            document.getElementById('reg-end').value = endVal;
+
+            // Cập nhật UI cho bảng Giờ kết thúc
+            const endContainer = document.getElementById('end-time-slots');
+            if (endContainer) {
+                endContainer.querySelectorAll('.time-chip').forEach(c => {
+                    if (c.dataset.time === endVal) {
+                        c.classList.add('bg-brand-primary', 'text-white', 'shadow-md');
+                        c.classList.remove('bg-surface-container-low', 'text-on-surface');
+                    } else {
+                        c.classList.remove('bg-brand-primary', 'text-white', 'shadow-md');
+                        c.classList.add('bg-surface-container-low', 'text-on-surface');
+                    }
+                });
+            }
+        });
+    }
+
+    // Xử lý chọn Giờ kết thúc
+    const endContainer = document.getElementById('end-time-slots');
+    if (endContainer) {
+        endContainer.addEventListener('click', (e) => {
+            const chip = e.target.closest('.time-chip');
+            if (!chip) return;
+            // Xóa active cũ
+            endContainer.querySelectorAll('.time-chip').forEach(c => {
+                c.classList.remove('bg-brand-primary', 'text-white', 'shadow-md');
+                c.classList.add('bg-surface-container-low', 'text-on-surface');
+            });
+            // Áp dụng màu xanh cho ô được chọn
+            chip.classList.remove('bg-surface-container-low', 'text-on-surface');
+            chip.classList.add('bg-brand-primary', 'text-white', 'shadow-md');
+            document.getElementById('reg-end').value = chip.dataset.time;
+        });
+    }
+
+    // Set default values
+    const today = new Date();
+    document.getElementById('reg-date').value = today.toLocaleDateString('vi-VN');
 
     // Search PT filter
     document.getElementById('search-pt')?.addEventListener('input', e => {
@@ -287,8 +382,6 @@ window.GymApp.pages['pt-register'] = {
           // Reset selections
           document.getElementById('clear-pt').click();
           document.getElementById('clear-member').click();
-          document.getElementById('reg-start').value = '';
-          document.getElementById('reg-end').value = '';
           document.getElementById('reg-notes').value = '';
         }
       } catch (err) {
@@ -315,13 +408,14 @@ window.GymApp.pages['pt-register'] = {
     if (!list) return;
 
     list.innerHTML = pts.map(pt => `
-      <div class="pt-card flex items-center gap-compact p-compact rounded-lg cursor-pointer hover:bg-surface-container transition-colors border border-transparent"
+      <div class="pt-card flex items-center gap-standard p-standard rounded-xl cursor-pointer hover:bg-brand-primary/10 hover:shadow-sm transition-all border border-transparent hover:border-brand-primary/20 bg-white/50 dark:bg-slate-800/20"
            data-pt-id="${pt.id}" data-pt-name="${pt.ho_ten}" data-pt-specialty="${pt.loai_ho_so}">
         ${window.GymApp.avatarImg(pt.avatar_url, pt.ho_ten, 'sm')}
         <div class="flex-1 min-w-0">
-          <p class="font-bold text-on-surface text-body-md">${pt.ho_ten}</p>
-          <p class="text-on-surface-variant text-body-sm">${pt.ma_ho_so}</p>
+          <p class="font-black text-on-surface text-body-md truncate">${pt.ho_ten}</p>
+          <p class="text-label-xs text-on-surface-variant font-bold opacity-60 uppercase">${pt.ma_ho_so}</p>
         </div>
+        <span class="material-symbols-outlined text-outline group-hover:text-brand-primary opacity-0 group-hover:opacity-100 transition-all">add_circle</span>
       </div>
     `).join('');
 
@@ -346,13 +440,14 @@ window.GymApp.pages['pt-register'] = {
     if (!list) return;
 
     list.innerHTML = members.map(m => `
-      <div class="member-card flex items-center gap-compact p-compact rounded-lg cursor-pointer hover:bg-surface-container transition-colors border border-transparent"
+      <div class="member-card flex items-center gap-standard p-standard rounded-xl cursor-pointer hover:bg-brand-primary/10 hover:shadow-sm transition-all border border-transparent hover:border-brand-primary/20 bg-white/50 dark:bg-slate-800/20"
            data-member-id="${m.ho_so_id}" data-member-name="${m.ho_ten}" data-member-phone="${m.so_dien_thoai}">
         ${window.GymApp.avatarImg(m.avatar_url, m.ho_ten, 'sm')}
         <div class="flex-1 min-w-0">
-          <p class="font-bold text-on-surface text-body-md">${m.ho_ten}</p>
-          <p class="text-on-surface-variant text-body-sm">${m.ma_ho_so} &bull; ${m.so_dien_thoai || ''}</p>
+          <p class="font-black text-on-surface text-body-md truncate">${m.ho_ten}</p>
+          <p class="text-label-xs text-on-surface-variant font-bold opacity-60 uppercase">${m.ma_ho_so} &bull; ${m.so_dien_thoai || ''}</p>
         </div>
+        <span class="material-symbols-outlined text-outline group-hover:text-brand-primary opacity-0 group-hover:opacity-100 transition-all">add_circle</span>
       </div>
     `).join('');
 
@@ -370,4 +465,22 @@ window.GymApp.pages['pt-register'] = {
       });
     });
   },
+
+  _renderTimeChips: function(type, defaultTime) {
+    const slots = [];
+    for (let h = 5; h <= 21; h++) {
+      slots.push(`${String(h).padStart(2, '0')}:00`);
+      slots.push(`${String(h).padStart(2, '0')}:30`);
+    }
+    
+    return slots.map(time => {
+        const isActive = time === defaultTime;
+        const activeClass = isActive ? 'bg-brand-primary text-white shadow-md' : 'bg-surface-container-low text-on-surface';
+        return `
+            <button type="button" class="time-chip ${activeClass} py-2 rounded-xl font-bold text-[11px] transition-all hover:scale-105 active:scale-95 border border-outline-variant/30" data-time="${time}">
+                ${time}
+            </button>
+        `;
+    }).join('');
+  }
 };
