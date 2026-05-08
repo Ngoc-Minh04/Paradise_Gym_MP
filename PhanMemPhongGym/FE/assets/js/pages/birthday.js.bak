@@ -1,0 +1,226 @@
+window.GymApp.pages['birthday'] = {
+  _monthNames: [
+    'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+    'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
+  ],
+
+  _getBirthdayGroups: function () {
+    const currentYear = new Date().getFullYear();
+    const rawMembers = window.GymApp.data.members;
+    const membersList = Array.isArray(rawMembers) ? rawMembers : [];
+    return Array.from({ length: 12 }, (_, idx) => {
+      const month = idx + 1;
+      const members = membersList
+        .filter(m => {
+          const bDay = m.ngay_sinh || m.dob;
+          return bDay && typeof bDay === 'string' && Number(bDay.split('-')[1]) === month;
+        })
+        .map(m => {
+          const bDay = m.ngay_sinh || m.dob;
+          const [year, mth, day] = bDay.split('-').map(Number);
+          return {
+            ...m,
+            birthDay: day,
+            birthMonth: mth,
+            ageThisYear: currentYear - year,
+          };
+        })
+        .sort((a, b) => a.birthDay - b.birthDay || (a.ho_ten || '').localeCompare(b.ho_ten || '', 'vi'));
+
+      return {
+        month,
+        label: this._monthNames[idx],
+        members,
+      };
+    }).filter(group => group.members.length > 0);
+  },
+
+  _getTodayBirthdays: function () {
+    const today = new Date();
+    const todayMD = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const rawMembers = window.GymApp.data.members;
+    const members = Array.isArray(rawMembers) ? rawMembers : [];
+    return members.filter(m => {
+      const bDay = m.ngay_sinh || m.dob;
+      if (!bDay) return false;
+      const parts = bDay.split('-');
+      return `${parts[1]}-${parts[2]}` === todayMD;
+    });
+  },
+
+  render: function () {
+    const groups = this._getBirthdayGroups();
+    const todayBirthdays = this._getTodayBirthdays();
+    const busiestGroup = groups.reduce((best, group) => !best || group.members.length > best.members.length ? group : best, null);
+
+    return `
+      <div class="flex flex-col gap-margin animate-soft">
+
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-standard">
+          <div>
+            <h2 class="font-display-2xl text-display-2xl text-on-surface font-black">Sinh nhật Hội viên</h2>
+            <p class="text-on-surface-variant font-body-sm text-body-sm opacity-70">
+              Cùng Paradise GYM chúc mừng những khoảnh khắc đặc biệt của hội viên
+            </p>
+          </div>
+          <button id="btn-birthday-celebrate-all" class="bg-brand-primary text-white px-loose py-3 rounded-2xl font-black hover:scale-105 transition-all flex items-center gap-compact shadow-lg shadow-brand-primary/20">
+            <span class="material-symbols-outlined">celebration</span>
+            CHÚC MỪNG TẤT CẢ
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-loose">
+          ${[
+            { label: 'Sinh nhật hôm nay', value: todayBirthdays.length, icon: 'cake', color: 'text-pink-600', bg: 'bg-pink-100 dark:bg-pink-900/30' },
+            { label: 'Tháng có dữ liệu', value: groups.length, icon: 'calendar_month', color: 'text-brand-primary', bg: 'bg-brand-primary/10' },
+            { label: busiestGroup ? `Tháng đông nhất: ${busiestGroup.label}` : 'Tháng đông nhất', value: busiestGroup ? busiestGroup.members.length : 0, icon: 'auto_awesome', color: 'text-amber-600', bg: 'bg-amber-100 dark:bg-amber-900/30' },
+          ].map(s => `
+            <div class="premium-card p-loose shadow-soft flex items-center gap-standard group hover:shadow-lg transition-all">
+              <div class="w-14 h-14 ${s.bg} rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:rotate-12 transition-transform">
+                <span class="material-symbols-outlined ${s.color} text-3xl">${s.icon}</span>
+              </div>
+              <div>
+                <p class="text-on-surface-variant text-label-bold font-bold uppercase opacity-60 tracking-tighter">${s.label}</p>
+                <p class="${s.color} font-display-2xl text-display-2xl font-black">${s.value}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Today Special -->
+        ${todayBirthdays.length > 0 ? `
+          <div class="premium-card p-loose shadow-lg border-2 border-brand-primary/20 bg-gradient-to-r from-brand-primary/5 to-transparent relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 opacity-10 group-hover:rotate-12 transition-transform">
+               <span class="material-symbols-outlined text-[120px] text-brand-primary">cake</span>
+            </div>
+            <div class="relative z-10 flex flex-col gap-loose">
+              <div class="flex items-center gap-compact">
+                <span class="material-symbols-outlined text-brand-primary text-3xl animate-bounce">celebration</span>
+                <h3 class="font-black text-on-surface text-display-lg italic">HÔM NAY LÀ SINH NHẬT CỦA...</h3>
+              </div>
+              <div class="flex flex-wrap gap-loose">
+                ${todayBirthdays.map(m => `
+                  <div class="birthday-today-chip flex items-center gap-standard premium-card p-standard hover:border-brand-primary transition-all cursor-pointer group/item scale-110 shadow-md" data-label="CHÚC MỪNG SINH NHẬT" data-count="${m.ho_ten}">
+                    <div class="relative">
+                       ${window.GymApp.avatarImg(m.avatar_url, m.ho_ten, 'lg')}
+                       <div class="absolute -top-1 -right-1 bg-pink-500 text-white rounded-full p-0.5 shadow-sm">
+                          <span class="material-symbols-outlined text-[10px]">favorite</span>
+                       </div>
+                    </div>
+                    <div>
+                      <p class="font-black text-on-surface text-body-lg group-hover/item:text-brand-primary">${m.ho_ten}</p>
+                      <p class="text-label-xs text-brand-primary font-bold uppercase">Nhấn để bắn pháo hoa!</p>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Monthly Cards Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-loose">
+          ${groups.map(group => `
+            <div class="premium-card shadow-soft overflow-hidden group hover:shadow-xl transition-all border border-transparent hover:border-brand-primary/20 flex flex-col">
+              <div class="px-loose py-standard border-b border-outline-variant/30 flex items-center justify-between bg-black/5 dark:bg-white/5">
+                <div class="flex items-center gap-compact">
+                  <div class="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-brand-primary">cake</span>
+                  </div>
+                  <div>
+                    <p class="font-black text-on-surface text-body-lg">${group.label}</p>
+                    <p class="text-[10px] text-on-surface-variant font-bold opacity-60 uppercase">${group.members.length} hội viên</p>
+                  </div>
+                </div>
+                <button class="birthday-burst-btn w-10 h-10 rounded-full flex items-center justify-center bg-brand-primary text-white shadow-md hover:scale-110 transition-transform" data-month="${group.month}" data-label="${group.label}" data-count="${group.members.length}">
+                  <span class="material-symbols-outlined">auto_awesome</span>
+                </button>
+              </div>
+              
+              <div class="p-loose grid grid-cols-1 sm:grid-cols-2 gap-standard">
+                ${group.members.map(m => `
+                  <div class="flex items-center gap-standard p-standard rounded-2xl bg-surface-container-low/50 hover:bg-white dark:hover:bg-slate-700 transition-all border border-transparent hover:border-brand-primary/10 group/member">
+                    ${window.GymApp.avatarImg(m.avatar_url, m.ho_ten, 'md')}
+                    <div class="min-w-0">
+                      <p class="font-black text-on-surface text-body-md truncate group-hover/member:text-brand-primary">${m.ho_ten}</p>
+                      <div class="flex items-center gap-xs text-[10px] text-on-surface-variant font-bold uppercase opacity-60">
+                        <span class="text-brand-primary">${String(m.birthDay).padStart(2, '0')}/${String(m.birthMonth).padStart(2, '0')}</span>
+                        <span>•</span>
+                        <span>${m.ageThisYear} TUỔI</span>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+      </div>
+    `;
+  },
+
+  _showBirthdayBurst: function (label, count) {
+    document.getElementById('birthday-burst-layer')?.remove();
+
+    const layer = document.createElement('div');
+    layer.id = 'birthday-burst-layer';
+    layer.style.cssText = 'position:fixed;inset:0;z-index:9997;pointer-events:none;overflow:hidden;';
+    document.body.appendChild(layer);
+
+    const emojis = ['🎂', '🎈', '🎉', '🎁', '🎊', '✨', '🧁', '🍰', '🎈', '🎉'];
+    const colors = ['#1D9336', '#db2777', '#f59e0b', '#3b82f6', '#ec4899', '#ef4444'];
+
+    // Mưa pháo giấy và icon rơi từ trên cao
+    for (let i = 0; i < 120; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'birthday-confetti-piece';
+      const isEmoji = Math.random() > 0.7;
+      
+      if (isEmoji) {
+        piece.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        piece.style.fontSize = (16 + Math.random() * 20) + 'px';
+      } else {
+        piece.style.width = (6 + Math.random() * 8) + 'px';
+        piece.style.height = (10 + Math.random() * 12) + 'px';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.borderRadius = '2px';
+      }
+
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.animationDuration = (2 + Math.random() * 3) + 's';
+      piece.style.animationDelay = (Math.random() * 2) + 's';
+      layer.appendChild(piece);
+    }
+
+    const banner = document.createElement('div');
+    banner.className = 'birthday-burst-banner';
+    banner.innerHTML = `
+      <span class="material-symbols-outlined text-brand-primary text-2xl animate-bounce">celebration</span>
+      <div class="flex flex-col">
+        <span class="font-black text-on-surface text-sm uppercase tracking-wider">${label}</span>
+        <span class="text-brand-primary font-bold text-[11px]">${count ? `Chúc mừng ${count}!` : 'Happy Birthday!'}</span>
+      </div>
+    `;
+    layer.appendChild(banner);
+
+    setTimeout(() => layer.remove(), 6000);
+  },
+
+  init: function () {
+    const self = this;
+
+    document.querySelectorAll('.birthday-burst-btn, .birthday-today-chip').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        self._showBirthdayBurst(btn.dataset.label, btn.dataset.count);
+      });
+    });
+
+    document.getElementById('btn-birthday-celebrate-all')?.addEventListener('click', e => {
+      self._showBirthdayBurst('PARADISE GYM', 'TẤT CẢ HỘI VIÊN');
+    });
+  }
+};

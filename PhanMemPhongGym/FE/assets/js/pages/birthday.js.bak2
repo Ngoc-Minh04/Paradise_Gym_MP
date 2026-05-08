@@ -1,0 +1,280 @@
+﻿window.GymApp.pages['birthday'] = {
+  _monthNames: [
+    'ThÃ¡ng 1', 'ThÃ¡ng 2', 'ThÃ¡ng 3', 'ThÃ¡ng 4', 'ThÃ¡ng 5', 'ThÃ¡ng 6',
+    'ThÃ¡ng 7', 'ThÃ¡ng 8', 'ThÃ¡ng 9', 'ThÃ¡ng 10', 'ThÃ¡ng 11', 'ThÃ¡ng 12'
+  ],
+
+  _getBirthdayGroups: function () {
+    const currentYear = new Date().getFullYear();
+    const rawMembers = window.GymApp.data.members;
+    const membersList = Array.isArray(rawMembers) ? rawMembers : [];
+    return Array.from({ length: 12 }, (_, idx) => {
+      const month = idx + 1;
+      const members = membersList
+        .filter(m => {
+          const bDay = m.ngay_sinh || m.dob;
+          return bDay && typeof bDay === 'string' && Number(bDay.split('-')[1]) === month;
+        })
+        .map(m => {
+          const bDay = m.ngay_sinh || m.dob;
+          const [year, mth, day] = bDay.split('-').map(Number);
+          return {
+            ...m,
+            birthDay: day,
+            birthMonth: mth,
+            ageThisYear: currentYear - year,
+          };
+        })
+        .sort((a, b) => a.birthDay - b.birthDay || (a.ho_ten || '').localeCompare(b.ho_ten || '', 'vi'));
+
+      return {
+        month,
+        label: this._monthNames[idx],
+        members,
+      };
+    }).filter(group => group.members.length > 0);
+  },
+
+  _getTodayBirthdays: function () {
+    const today = new Date();
+    const todayMD = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const rawMembers = window.GymApp.data.members;
+    const members = Array.isArray(rawMembers) ? rawMembers : [];
+    return members.filter(m => {
+      const bDay = m.ngay_sinh || m.dob;
+      if (!bDay) return false;
+      const parts = bDay.split('-');
+      return `${parts[1]}-${parts[2]}` === todayMD;
+    });
+  },
+
+  render: function () {
+    const groups = this._getBirthdayGroups();
+    const todayBirthdays = this._getTodayBirthdays();
+    const busiestGroup = groups.reduce((best, group) => !best || group.members.length > best.members.length ? group : best, null);
+
+    return `
+      <div class="flex flex-col gap-margin animate-soft">
+
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-standard">
+          <div>
+            <h2 class="font-display-2xl text-display-2xl text-on-surface font-black">Sinh nháº­t Há»™i viÃªn</h2>
+            <p class="text-on-surface-variant font-body-sm text-body-sm opacity-70">
+              CÃ¹ng Paradise GYM chÃºc má»«ng nhá»¯ng khoáº£nh kháº¯c Ä‘áº·c biá»‡t cá»§a há»™i viÃªn
+            </p>
+          </div>
+          <button id="btn-birthday-celebrate-all" class="bg-brand-primary text-white px-loose py-3 rounded-2xl font-black hover:scale-105 transition-all flex items-center gap-compact shadow-lg shadow-brand-primary/20">
+            <span class="material-symbols-outlined">celebration</span>
+            CHÃšC Má»ªNG Táº¤T Cáº¢
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-loose">
+          ${[
+            { label: 'Sinh nháº­t hÃ´m nay', value: todayBirthdays.length, icon: 'cake', color: 'text-pink-600', bg: 'bg-pink-100 dark:bg-pink-900/30' },
+            { label: 'ThÃ¡ng cÃ³ dá»¯ liá»‡u', value: groups.length, icon: 'calendar_month', color: 'text-brand-primary', bg: 'bg-brand-primary/10' },
+            { label: busiestGroup ? `ThÃ¡ng Ä‘Ã´ng nháº¥t: ${busiestGroup.label}` : 'ThÃ¡ng Ä‘Ã´ng nháº¥t', value: busiestGroup ? busiestGroup.members.length : 0, icon: 'auto_awesome', color: 'text-amber-600', bg: 'bg-amber-100 dark:bg-amber-900/30' },
+          ].map(s => `
+            <div class="premium-card p-loose shadow-soft flex items-center gap-standard group hover:shadow-lg transition-all">
+              <div class="w-14 h-14 ${s.bg} rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:rotate-12 transition-transform">
+                <span class="material-symbols-outlined ${s.color} text-3xl">${s.icon}</span>
+              </div>
+              <div>
+                <p class="text-on-surface-variant text-label-bold font-bold uppercase opacity-60 tracking-tighter">${s.label}</p>
+                <p class="${s.color} font-display-2xl text-display-2xl font-black">${s.value}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Today Special -->
+        ${todayBirthdays.length > 0 ? `
+          <div class="premium-card p-loose shadow-lg border-2 border-brand-primary/20 bg-gradient-to-r from-brand-primary/5 to-transparent relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 opacity-10 group-hover:rotate-12 transition-transform">
+               <span class="material-symbols-outlined text-[120px] text-brand-primary">cake</span>
+            </div>
+            <div class="relative z-10 flex flex-col gap-loose">
+              <div class="flex items-center gap-compact">
+                <span class="material-symbols-outlined text-brand-primary text-3xl animate-bounce">celebration</span>
+                <h3 class="font-black text-on-surface text-display-lg italic">HÃ”M NAY LÃ€ SINH NHáº¬T Cá»¦A...</h3>
+              </div>
+              <div class="flex flex-wrap gap-loose">
+                ${todayBirthdays.map(m => `
+                  <div class="birthday-today-chip flex items-center gap-standard premium-card p-standard hover:border-brand-primary transition-all cursor-pointer group/item scale-110 shadow-md" data-label="CHÃšC Má»ªNG SINH NHáº¬T" data-count="${m.ho_ten}">
+                    <div class="relative">
+                       ${window.GymApp.avatarImg(m.avatar_url, m.ho_ten, 'lg')}
+                       <div class="absolute -top-1 -right-1 bg-pink-500 text-white rounded-full p-0.5 shadow-sm">
+                          <span class="material-symbols-outlined text-[10px]">favorite</span>
+                       </div>
+                    </div>
+                    <div>
+                      <p class="font-black text-on-surface text-body-lg group-hover/item:text-brand-primary">${m.ho_ten}</p>
+                      <p class="text-label-xs text-brand-primary font-bold uppercase">Nháº¥n Ä‘á»ƒ báº¯n phÃ¡o hoa!</p>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Monthly Cards Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-loose">
+          ${groups.map(group => `
+            <div class="premium-card shadow-soft overflow-hidden group hover:shadow-xl transition-all border border-transparent hover:border-brand-primary/20 flex flex-col">
+              <div class="px-loose py-standard border-b border-outline-variant/30 flex items-center justify-between bg-black/5 dark:bg-white/5">
+                <div class="flex items-center gap-compact">
+                  <div class="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-brand-primary">cake</span>
+                  </div>
+                  <div>
+                    <p class="font-black text-on-surface text-body-lg">${group.label}</p>
+                    <p class="text-[10px] text-on-surface-variant font-bold opacity-60 uppercase">${group.members.length} há»™i viÃªn</p>
+                  </div>
+                </div>
+                <button class="birthday-burst-btn w-10 h-10 rounded-full flex items-center justify-center bg-brand-primary text-white shadow-md hover:scale-110 transition-transform" data-month="${group.month}" data-label="${group.label}" data-count="${group.members.length}">
+                  <span class="material-symbols-outlined">auto_awesome</span>
+                </button>
+              </div>
+              
+              <div class="p-loose grid grid-cols-1 sm:grid-cols-2 gap-standard">
+                ${group.members.map(m => `
+                  <div class="flex items-center gap-standard p-standard rounded-2xl bg-surface-container-low/50 hover:bg-white dark:hover:bg-slate-700 transition-all border border-transparent hover:border-brand-primary/10 group/member">
+                    ${window.GymApp.avatarImg(m.avatar_url, m.ho_ten, 'md')}
+                    <div class="min-w-0">
+                      <p class="font-black text-on-surface text-body-md truncate group-hover/member:text-brand-primary">${m.ho_ten}</p>
+                      <div class="flex items-center gap-xs text-[10px] text-on-surface-variant font-bold uppercase opacity-60">
+                        <span class="text-brand-primary">${String(m.birthDay).padStart(2, '0')}/${String(m.birthMonth).padStart(2, '0')}</span>
+                        <span>â€¢</span>
+                        <span>${m.ageThisYear} TUá»”I</span>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+      </div>
+    `;
+  },
+
+    _showBirthdayBurst: function (label, count) {
+    document.getElementById('birthday-burst-layer')?.remove();
+
+    const layer = document.createElement('div');
+    layer.id = 'birthday-burst-layer';
+    layer.style.cssText = 'position:fixed;inset:0;z-index:9997;pointer-events:none;overflow:hidden;';
+    document.body.appendChild(layer);
+
+    const colors = ['#1D9336', '#db2777', '#f59e0b', '#3b82f6', '#ec4899', '#ef4444', '#06b6d4', '#8b5cf6'];
+    const emojis = ['🎂', '🎈', '🎉', '🎊', '✨', '🧁', '🎆'];
+
+    // Confetti rơi từ trên xuống
+    for (let i = 0; i < 150; i++) {
+      const piece = document.createElement('div');
+      piece.style.cssText = 'position: fixed; pointer-events: none; z-index: 9999;';
+      
+      const isEmoji = Math.random() > 0.6;
+      const startX = Math.random() * 100;
+      const delay = Math.random() * 0.5;
+      const duration = 2.5 + Math.random() * 1.5;
+      const rotation = Math.random() * 360;
+      const swayAmount = 30 + Math.random() * 50;
+
+      if (isEmoji) {
+        piece.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        piece.style.fontSize = (20 + Math.random() * 24) + 'px';
+      } else {
+        piece.style.width = (8 + Math.random() * 10) + 'px';
+        piece.style.height = (8 + Math.random() * 10) + 'px';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        piece.style.boxShadow = '0 0 ' + (4 + Math.random() * 8) + 'px ' + colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      piece.style.left = startX + 'vw';
+      piece.style.top = '-50px';
+      piece.style.animation = 'confetti-fall ' + duration + 's linear ' + delay + 's forwards, confetti-sway ' + (1.5 + Math.random() * 1) + 's ease-in-out ' + delay + 's infinite';
+      piece.style.setProperty('--sway', swayAmount + 'px');
+      piece.style.setProperty('--rotation', rotation + 'deg');
+      
+      layer.appendChild(piece);
+    }
+
+    // Fireworks từ giữa màn hình
+    for (let i = 0; i < 40; i++) {
+      setTimeout(() => {
+        const firework = document.createElement('div');
+        firework.style.cssText = 'position: fixed; left: 50%; top: 50%; width: 8px; height: 8px; border-radius: 50%; pointer-events: none; z-index: 9998;';
+        
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        firework.style.background = color;
+        firework.style.boxShadow = '0 0 10px ' + color;
+        
+        const angle = (i / 40) * Math.PI * 2;
+        const velocity = 3 + Math.random() * 4;
+        const tx = Math.cos(angle) * velocity * 100;
+        const ty = Math.sin(angle) * velocity * 100;
+        
+        firework.style.animation = 'firework-burst 1.2s ease-out forwards';
+        firework.style.setProperty('--tx', tx + 'px');
+        firework.style.setProperty('--ty', ty + 'px');
+        
+        layer.appendChild(firework);
+        setTimeout(() => firework.remove(), 1200);
+      }, i * 50);
+    }
+
+    // Floating Balloons
+    for (let i = 0; i < 8; i++) {
+      const balloon = document.createElement('div');
+      balloon.style.cssText = 'position: fixed; width: 40px; height: 50px; border-radius: 50% 50% 50% 0; pointer-events: none; z-index: 9996; left: ' + (10 + i * 12) + '%; bottom: -60px;';
+      
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      balloon.style.background = color;
+      balloon.style.boxShadow = 'inset -2px -2px 5px rgba(0,0,0,0.2), 0 0 15px ' + color;
+      balloon.style.transform = 'rotate(' + (i % 2 === 0 ? -20 : 20) + 'deg)';
+      
+      const duration = 4 + Math.random() * 2;
+      const delay = i * 0.2;
+      balloon.style.animation = 'balloon-float ' + duration + 's ease-in ' + delay + 's forwards';
+      
+      layer.appendChild(balloon);
+    }
+
+    // Banner
+    const banner = document.createElement('div');
+    banner.className = 'birthday-burst-banner-enhanced';
+    banner.innerHTML = '<div style="display: flex; align-items: center; gap: 12px;"><span class="material-symbols-outlined" style="color: #1D9336; font-size: 28px; animation: bounce 0.6s ease-in-out infinite;">celebration</span><div style="display: flex; flex-direction: column;"><span style="font-weight: 900; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">' + label + '</span><span style="color: #1D9336; font-weight: bold; font-size: 12px;">' + (count ? 'Chuc mung ' + count + '!' : 'Happy Birthday!') + '</span></div></div>';
+    banner.style.cssText = 'position: fixed; left: 50%; top: 30px; transform: translateX(-50%); z-index: 9998; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid #1D9336; border-radius: 50px; padding: 16px 24px; box-shadow: 0 20px 60px rgba(29, 147, 54, 0.3); animation: banner-pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;';
+    
+    layer.appendChild(banner);
+
+    if (document.documentElement.classList.contains('dark')) {
+      banner.style.background = 'rgba(28, 32, 40, 0.95)';
+      banner.style.borderColor = '#4cce5f';
+      banner.querySelector('span:last-child').style.color = '#4cce5f';
+    }
+
+    setTimeout(() => layer.remove(), 6000);
+  },
+
+  init: function () {
+    const self = this;
+
+    document.querySelectorAll('.birthday-burst-btn, .birthday-today-chip').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        self._showBirthdayBurst(btn.dataset.label, btn.dataset.count);
+      });
+    });
+
+    document.getElementById('btn-birthday-celebrate-all')?.addEventListener('click', e => {
+      self._showBirthdayBurst('PARADISE GYM', 'Táº¤T Cáº¢ Há»˜I VIÃŠN');
+    });
+  }
+};

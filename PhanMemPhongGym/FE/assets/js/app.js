@@ -36,10 +36,9 @@
 
     window.GymApp.currentPage = pageName;
 
-    // Birthday: render page immediately, then auto-run celebration effect.
+    // Birthday
     if (pageName === 'birthday') {
       if (page.init) setTimeout(() => page.init(), 50);
-      setTimeout(() => window.GymApp.showBirthdayEffect(), 120);
       return;
     }
 
@@ -88,78 +87,6 @@
     sidebar.classList.toggle('sidebar-collapsed');
   }
 
-  // ===== BIRTHDAY EFFECT =====
-  window.GymApp.showBirthdayEffect = function (callback) {
-    document.getElementById('birthday-auto-effect-layer')?.remove();
-
-    const today = new Date();
-    const todayMD = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    const count = (window.GymApp.data.members || []).filter(m => {
-      if (!m.ngay_sinh) return false;
-      const p = m.ngay_sinh.split('-'); return `${p[1]}-${p[2]}` === todayMD;
-    }).length;
-
-    const colors = ['#1D9336', '#a52d59', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6', '#ef4444', '#14b8a6', '#f97316'];
-
-    const layer = document.createElement('div');
-    layer.id = 'birthday-auto-effect-layer';
-    layer.style.cssText = 'position:fixed;inset:0;z-index:9997;pointer-events:none;overflow:hidden;';
-    document.body.appendChild(layer);
-
-    for (let i = 0; i < 140; i++) {
-      const el = document.createElement('div');
-      const size = Math.random() * 10 + 6;
-      const dur = Math.random() * 2.5 + 2;
-      const delay = Math.random() * 1.5;
-      el.className = 'confetti-piece';
-      el.style.cssText = `left:${Math.random() * 100}vw;top:-20px;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random() * colors.length)]};border-radius:${Math.random() > 0.5 ? '50%' : '3px'};animation-duration:${dur}s,${dur * 0.6}s;animation-delay:${delay}s,${delay}s;`;
-      layer.appendChild(el);
-    }
-
-    for (let i = 0; i < 60; i++) {
-      const bubble = document.createElement('span');
-      const size = 18 + Math.random() * 54;
-      bubble.className = 'birthday-bubble';
-      bubble.style.cssText = `
-        left:${Math.random() * 100}vw;bottom:-80px;width:${size}px;height:${size}px;
-        border-color:${colors[Math.floor(Math.random() * colors.length)]};
-        animation-duration:${3 + Math.random() * 3}s;
-        animation-delay:${Math.random() * 0.7}s;
-      `;
-      layer.appendChild(bubble);
-    }
-
-    for (let burst = 0; burst < 4; burst++) {
-      const x = window.innerWidth * (0.18 + Math.random() * 0.64);
-      const y = window.innerHeight * (0.18 + Math.random() * 0.42);
-      for (let i = 0; i < 28; i++) {
-        const spark = document.createElement('span');
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 70 + Math.random() * 190;
-        const size = 4 + Math.random() * 8;
-        spark.className = 'birthday-firework-spark';
-        spark.style.cssText = `
-          left:${x}px;top:${y}px;width:${size}px;height:${size}px;
-          background:${colors[Math.floor(Math.random() * colors.length)]};
-          --tx:${Math.cos(angle) * distance}px;--ty:${Math.sin(angle) * distance}px;
-          animation-delay:${burst * 0.28 + Math.random() * 0.12}s;
-        `;
-        layer.appendChild(spark);
-      }
-    }
-
-    const banner = document.createElement('div');
-    banner.className = 'birthday-burst-banner';
-    banner.innerHTML = `
-      <span class="material-symbols-outlined">celebration</span>
-      <strong>Không khí sinh nhật</strong>
-      <span>${count > 0 ? `${count} hội viên sinh nhật hôm nay` : 'Lịch sinh nhật đã sẵn sàng'}</span>
-    `;
-    layer.appendChild(banner);
-
-    setTimeout(() => layer.remove(), 6200);
-    if (callback) callback();
-  };
 
   // ===== MODAL =====
   window.GymApp.showModal = function (htmlContent) {
